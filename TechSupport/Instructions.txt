@@ -1,0 +1,41 @@
+1. Change static IP address from RPI
+sudo nano /etc/dhcpcd.conf
+
+interface eth0
+static ip_address=192.168.1.20/24
+static routers=192.168.1.1
+static domain_name_servers=192.168.1.1 8.8.8.8
+
+ctrl+o, enter, ctrl+x, sudo reboot
+
+2. If you want to use NetBeans to run the Java project:
+Change the ethernet IP settings of your PC and assign an address in the 192.168.1.x range.
+Add new virtual platform with:
+IP: 192.168.1.20:22
+Select the new config in order to use it.
+
+Register as service:
+https://codetober.com/how-to-start-jar-file-as-service-raspberry-pi-4/
+Write a unit file for systemd.
+$ sudo nano /etc/systemd/system/FoxunRPi.service
+
+  [Unit]
+  Description=FoxunRPi JAR
+  After=network.target
+
+  [Service]
+  Type=simple
+  ExecStart=/usr/bin/java -jar /home/pi/path/to/your/JAR.jar
+
+  [Install]
+  WantedBy=multi-user.target
+
+Start it at boot
+$ sudo systemctl enable FoxunRPi
+
+Manually control it
+$ sudo systemctl start|stop|status|restart FoxunRPi
+
+Observe the output
+$ sudo journalctl -u FoxunRPi
+
