@@ -21,13 +21,13 @@ public class FourWaySwitch {
     private int _currentInput = -1;
     
     
-    public FourWaySwitch(GpioPinDigitalInput input1, GpioPinDigitalInput input2, GpioPinDigitalInput input3, GpioPinDigitalInput input4){
+    public FourWaySwitch(GpioPinDigitalInput input1, GpioPinDigitalInput input2, GpioPinDigitalInput input3, GpioPinDigitalInput input4, int defaultInput){
         _input1 = input1;
         _input2 = input2;
         _input3 = input3;
         _input4 = input4;
         
-        initialize();
+        initialize(defaultInput);
         
         input1.addListener((GpioPinListenerDigital) (GpioPinDigitalStateChangeEvent event) -> {
             if(event.getState().isHigh()){
@@ -58,7 +58,7 @@ public class FourWaySwitch {
         return _currentInput;
     }
     
-    private void initialize(){
+    private void initialize(int defaultInput){
         if(_input1.isHigh()){
             _currentInput = 1;
         }
@@ -70,6 +70,9 @@ public class FourWaySwitch {
         }
         else if(_input4.isHigh()){
             _currentInput = 4;
+        }
+        else{
+            _currentInput = defaultInput;
         }
     }
 }

@@ -10,9 +10,13 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.RaspiPin;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Properties;
 
 /**
  *
@@ -25,11 +29,20 @@ public class FoxunRPi {
      */
     public static void main(String[] args) throws UnknownHostException, SocketException, IOException, InterruptedException {        
         
-        byte[] host = new byte[4];
-        host[0] = (byte) 192;
-        host[1] = (byte) 168;
-        host[2] = (byte) 1;
-        host[3] = (byte) 168; 
+        Properties prop = new Properties();
+        String fileName = "app.properties";
+        InputStream stream = null;
+        
+        try {
+            stream = new FileInputStream(fileName);
+            prop.load(stream);
+        } catch (Exception ex) {
+            return;
+        }
+        
+        int defaultInput = Integer.parseInt(prop.getProperty("DefaultInput", "-1"));
+        String switchIp = prop.getProperty("SwitchIP", null);
+        int switchPort = Integer.parseInt(prop.getProperty("SwitchPort", "-1"));
         
         final GpioController gpio = GpioFactory.getInstance();
         final GpioPinDigitalInput input1 = gpio.provisionDigitalInputPin(RaspiPin.GPIO_25, PinPullResistance.PULL_DOWN);
@@ -42,8 +55,8 @@ public class FoxunRPi {
         input3.setShutdownOptions(true);
         input4.setShutdownOptions(true);
         
-        FoxunClient client = new FoxunClient(host, 5000);
-        FourWaySwitch fourWaySwitch = new FourWaySwitch(input1, input2, input3, input4);
+        FoxunClient client = new FoxunClient(switchIp, switchPort);
+        FourWaySwitch fourWaySwitch = new FourWaySwitch(input1, input2, input3, input4, defaultInput);
         System.out.println("... Listening for input ...");
         int previousInput = -1;
         

@@ -17,19 +17,15 @@ import java.net.UnknownHostException;
  * @author pitte
  */
 public class FoxunClient {
-    private final byte[] _ip;
+    private final String _ip;
     private final int _port;
     
-    public FoxunClient(byte[] ip, int port){
+    public FoxunClient(String ip, int port){
         _ip = ip;
         _port = port;
     }
     
     public void Route(int input, int output) {
-        if(input > 0 && input < 4){
-            // Throw exception
-        }        
-        
         byte[] command = CreateCommand(input, output);
         
         try{
@@ -71,7 +67,7 @@ public class FoxunClient {
     private void SendRouteCommand(byte[] command) throws SocketException, UnknownHostException, IOException{
         DatagramSocket socket = new DatagramSocket();               
         
-        InetAddress address = InetAddress.getByAddress(_ip);
+        InetAddress address = InetAddress.getByName(_ip);
         DatagramPacket packet = new DatagramPacket(command, command.length, address, _port);
         socket.send(packet);
         
